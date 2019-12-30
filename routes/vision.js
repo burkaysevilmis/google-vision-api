@@ -16,10 +16,10 @@ router.get('/', function (req, res, next) {
     };
 
     client
-        .labelDetection(request)
+        .textDetection(request)
         .then(response => {
             console.log(response);
-            res.json(response);
+            res.send(response[0].textAnnotations[0].description);
         })
         .catch(err => {
             console.error(err);
