@@ -46,7 +46,7 @@ router.get("/", function(req, res, next) {
     });
 });
 
-router.get('/base64',(req,res,next) => {
+router.post('/base64',(req,res,next) => {
   const base64Data = req.body.base64;
 
   const client = new vision.ImageAnnotatorClient({
