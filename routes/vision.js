@@ -1,5 +1,6 @@
 var express = require("express");
-var url = require("url");
+const url = require("url");
+const querystring = require("querystring");
 var router = express.Router();
 const vision = require("@google-cloud/vision");
 
@@ -31,6 +32,12 @@ router.get("/", function(req, res, next) {
     .textDetection(request)
     .then(response => {
       console.log(response);
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "POST");
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, Content-Length, X-Requested-With"
+      );
       res.send(response[0].textAnnotations[0].description);
     })
     .catch(err => {
@@ -38,29 +45,32 @@ router.get("/", function(req, res, next) {
     });
 });
 
-router.post("/photo", function(req, res, next) {
+router.get("/photo", function(req, res, next) {
   const client = new vision.ImageAnnotatorClient({
     keyFilename: "APIKey.json"
   });
-
   const photoUrl = req.body.photoUrl;
+
+  var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+  let parsedUrl = url.parse(fullUrl);
+  let parsedQs = querystring.parse(parsedUrl.query);
+  console.log(parsedQs.photoUrl);
 
   const request = {
     image: {
-      source: { imageUri: photoUrl }
+      source: { imageUri: parsedQs.photoUrl }
     }
   };
-
-  // const request = {
-  //   image: {
-  //     content: photoUrl
-  //   }
-  // };
-
   client
     .textDetection(request)
     .then(response => {
       console.log(response);
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "POST");
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, Content-Length, X-Requested-With"
+      );
       res.send(response[0].textAnnotations[0].description);
     })
     .catch(err => {
